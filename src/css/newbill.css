@@ -29,6 +29,13 @@ label {
   line-height: 16px;
 }
 
+.image-error-message {
+  color: red;
+  font-style: italic;
+  font-size: 14px;
+  display: none;
+}
+
 .flex-col {
   margin-left: 50px;
 }
