@@ -140,9 +140,9 @@ describe("Given I am connected as an employee", () => {
       expect(newBill.isImageValid).toBeTruthy();
       form.addEventListener("submit", newBill.handleSubmit);
       fireEvent.submit(form);
-      const formContainer = $("#btn-send-bill");
-      if (formContainer) {
-        expect(formContainer.prop("disabled")).toBeFalsy();
+      const formButton = $("#btn-send-bill");
+      if (formButton) {
+        expect(formButton.prop("disabled")).toBeFalsy();
       }
     });
 
@@ -231,7 +231,7 @@ describe("Given I am connected as an employee", () => {
             fileUrl:
               "https://storage.googleapis.com/billable-ocr-images/test.jpg",
           });
-          expect(true).toBe(false);
+          expect(true).toBe(false);//If the create method doesn't throw an error, the test fails
         } catch (error) {
           expect(error.message).toBe(errorMessage);
         }

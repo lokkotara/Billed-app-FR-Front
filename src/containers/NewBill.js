@@ -24,7 +24,9 @@ export default class NewBill {
       .files[0];
     const filePath = e.target.value.split(/\\/g);
     const fileName = filePath[filePath.length - 1];
-    const mimeType = fileName.split(".")[fileName.split(".").length - 1]; // j'ai rajouté cette ligne pour vérifier l'extension du fichier
+
+    // TODO: Adding code to check mimetype of the file
+    const mimeType = fileName.split(".")[fileName.split(".").length - 1];
     const mimeTypeArray = ["jpg", "jpeg", "png"];
     const isInArray = mimeTypeArray.includes(mimeType);
     if (!isInArray) {
@@ -37,6 +39,7 @@ export default class NewBill {
       $(".image-error-message").hide();
       $("#btn-send-bill").prop("disabled", false);
     }
+
     const formData = new FormData();
     const email = JSON.parse(localStorage.getItem("user")).email;
     formData.append("file", file);
@@ -57,12 +60,15 @@ export default class NewBill {
       })
       .catch((error) => console.error(error));
   };
+
   handleSubmit = (e) => {
     e.preventDefault();
-    // je rajoute cette condition pour vérifier que l'image est valide
+
+    // TODO: Adding condition to prevent submitting an invalid form
     if (!this.isImageValid) {
       return;
     }
+
     const email = JSON.parse(localStorage.getItem("user")).email;
     const bill = {
       email,
