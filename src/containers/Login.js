@@ -49,15 +49,15 @@ export default class Login {
 
   handleSubmitAdmin = (e) => {
     e.preventDefault();
+
+    // FIXME: Query selectors were pointing to the wrong input fields
     const user = {
       type: "Admin",
-      email: e.target.querySelector(`input[data-testid="admin-email-input"]`)
-        .value, //HOTFIX : email input was not working because it was employee-email-input
-      password: e.target.querySelector(
-        `input[data-testid="admin-password-input"]`
-      ).value,
+      email: e.target.querySelector(`input[data-testid="admin-email-input"]`).value,
+      password: e.target.querySelector(`input[data-testid="admin-password-input"]`).value,
       status: "connected",
     };
+
     this.localStorage.setItem("user", JSON.stringify(user));
     this.login(user)
       .catch((err) => this.createUser(user))

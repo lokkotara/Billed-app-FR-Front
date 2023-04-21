@@ -147,12 +147,11 @@ export default class {
 
     bills.forEach(bill => {
       $(`#open-bill${bill.id}`)
-        .off("click")//HOTFIX: delete all event listeners of type "click" on the selected elements
+        .off("click")//FIXME : Delete all event listeners of type "click" on the selected elements
         .click((e) => this.handleEditTicket(e, bill, bills));
     })
 
     return bills
-
   }
 
   getBillsAllUsers = () => {
