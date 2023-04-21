@@ -1,7 +1,7 @@
 {
   "scripts": {
     "start": "live-server",
-    "test": "jest --coverage --noStackTrace --silent=false"
+    "test": "jest --coverage --noStackTrace --silent"
   },
   "jest": {
     "verbose": false,

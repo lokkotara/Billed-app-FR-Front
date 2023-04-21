@@ -42,8 +42,7 @@ describe("Given I am connected as an employee", () => {
     });
 
     test("Then bills should be ordered from earliest to latest", async () => {
-      const onNavigate = (pathname) =>
-        (document.body.innerHTML = ROUTES({ pathname }));
+      const onNavigate = (pathname) => (document.body.innerHTML = ROUTES({ pathname }));
       const billsContainer = new Bills({
         document,
         onNavigate,

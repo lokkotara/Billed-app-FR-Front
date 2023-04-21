@@ -10,6 +10,8 @@ import { ROUTES, ROUTES_PATH } from "../constants/routes";
 import { fireEvent, screen, waitFor } from "@testing-library/dom";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 
+jest.mock("../app/store", () => mockStore);
+
 describe("Given I am connected as an employee", () => {
   let onNavigate;
   beforeEach(() => {
@@ -28,6 +30,10 @@ describe("Given I am connected as an employee", () => {
     onNavigate = (pathname) => {
       document.body.innerHTML = ROUTES({ pathname });
     };
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+    document.body.innerHTML = "";
   });
   describe("When I am on NewBill Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
@@ -55,6 +61,7 @@ describe("Given I am connected as an employee", () => {
         localStorage: window.localStorage,
       });
       const handleChangeFile = jest.spyOn(newBill, "handleChangeFile");
+      const create = jest.spyOn(newBill.store.bills(), "create");
       const inputFile = screen.getByTestId("file");
       const e = {
         preventDefault() {},
@@ -69,6 +76,7 @@ describe("Given I am connected as an employee", () => {
         },
       });
       expect(handleChangeFile).toHaveBeenCalledTimes(1);
+      expect(create).toHaveBeenCalled();
     });
   });
 
@@ -102,7 +110,8 @@ describe("Given I am connected as an employee", () => {
       expect(formButton.prop("disabled")).toBeTruthy();
     });
 
-    test("Then if the form is valid, submit button should be enabled", async () => {
+    // POST route is tested in the API
+    test("Then if the form is valid, submit button should be enabled and clicking on it should use the post method to add a bill to the store", async () => {
       const newBill = new NewBill({
         document,
         onNavigate: onNavigate,
@@ -135,6 +144,98 @@ describe("Given I am connected as an employee", () => {
       if (formContainer) {
         expect(formContainer.prop("disabled")).toBeFalsy();
       }
+    });
+
+    describe("When an error occurs on API", () => {
+      test("then it should fail with 404 message error", async () => {
+        const errorMessage = "error 404";
+        const billsMock = {
+          list: jest.fn().mockResolvedValue(mockStore.bills().list()),
+          create: jest.fn(() => {
+            throw new Error(errorMessage);
+          }),
+          update: jest.fn((bill) => {
+            return Promise.resolve({ ...bill });
+          }),
+        };
+
+        const storeMock = {
+          bills: jest.fn().mockReturnValue(billsMock),
+        };
+        const newBill = new NewBill({
+          document,
+          onNavigate: onNavigate,
+          store: storeMock,
+          localStorage: window.localStorage,
+        });
+        const billsBeforeCreation = await newBill.store.bills().list();
+        expect(billsBeforeCreation.length).toBe(4);
+        try {
+          await newBill.store.bills().create({
+            status: "pending",
+            pct: 20,
+            amount: 200,
+            email: "a@a",
+            name: "test",
+            vat: "80",
+            fileName: "test.png",
+            date: "2021-04-01",
+            commentAdmin: "test",
+            commentary: "test",
+            type: "Hôtel et logement",
+            fileUrl:
+              "https://storage.googleapis.com/billable-ocr-images/test.jpg",
+          });
+          expect(true).toBe(false);
+        } catch (error) {
+          expect(error.message).toBe(errorMessage);
+        }
+      });
+
+      test("then it should fail with 500 message error", async () => {
+        const errorMessage = "error 500";
+        const billsMock = {
+          list: jest.fn().mockResolvedValue(mockStore.bills().list()),
+          create: jest.fn(() => {
+            throw new Error(errorMessage);
+          }),
+          update: jest.fn((bill) => {
+            return Promise.resolve({ ...bill });
+          }),
+        };
+
+        const storeMock = {
+          bills: jest.fn().mockReturnValue(billsMock),
+        };
+        const newBill = new NewBill({
+          document,
+          onNavigate: onNavigate,
+          store: storeMock,
+          localStorage: window.localStorage,
+        });
+        const billsBeforeCreation = await newBill.store.bills().list();
+        expect(billsBeforeCreation.length).toBe(4);
+        try {
+          await newBill.store.bills().create({
+            status: "pending",
+            pct: 20,
+            amount: 200,
+            email: "a@a",
+            name: "test",
+            vat: "80",
+            fileName: "test.png",
+            date: "2021-04-01",
+            commentAdmin: "test",
+            commentary: "test",
+            type: "Hôtel et logement",
+            fileUrl:
+              "https://storage.googleapis.com/billable-ocr-images/test.jpg",
+          });
+          expect(true).toBe(false);
+        } catch (error) {
+          expect(error.message).toBe(errorMessage);
+        }
+      });
     });
   });
 });
